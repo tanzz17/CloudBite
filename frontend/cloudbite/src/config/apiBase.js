@@ -1,4 +1,8 @@
-const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").trim();
+const defaultProductionBaseUrl = "https://cloudbite-backend.onrender.com";
+const rawBaseUrl = (
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? defaultProductionBaseUrl : "")
+).trim();
 
 const sanitizedBaseUrl = rawBaseUrl.replace(/\/+$/, "");
 const hasApiSuffix = /\/api$/i.test(sanitizedBaseUrl);

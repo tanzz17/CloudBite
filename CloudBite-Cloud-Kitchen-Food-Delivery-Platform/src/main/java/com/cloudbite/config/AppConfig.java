@@ -26,14 +26,18 @@ import java.util.stream.Collectors;
 @Configuration
 public class AppConfig {
 
-    @Value("${app.cors.allowed-origins:https://cloud-bite-sigma.vercel.app,https://cloud-bite-git-main-tanzz17s-projects.vercel.app,https://cloudbite-frontend.vercel.app,https://*.vercel.app}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000,https://cloud-bite-sigma.vercel.app,https://cloud-bite-git-main-tanzz17s-projects.vercel.app,https://cloudbite-frontend.vercel.app,https://*.vercel.app,https://*.netlify.app,*}")
     private String allowedOrigins;
 
     private static final List<String> DEFAULT_ALLOWED_ORIGINS = List.of(
+            "http://localhost:5173",
+            "http://localhost:3000",
             "https://cloud-bite-sigma.vercel.app",
             "https://cloud-bite-git-main-tanzz17s-projects.vercel.app",
             "https://cloudbite-frontend.vercel.app",
-            "https://*.vercel.app"
+            "https://*.vercel.app",
+            "https://*.netlify.app",
+            "*"
     );
 
     @Bean
@@ -121,4 +125,3 @@ public class AppConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
