@@ -1,0 +1,7 @@
+{
+  "name": "cloudbite-root",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend/cloudbite install && npm --prefix frontend/cloudbite run build"
+  }
+}
