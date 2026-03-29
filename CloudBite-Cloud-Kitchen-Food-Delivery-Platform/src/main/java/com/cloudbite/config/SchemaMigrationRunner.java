@@ -19,6 +19,7 @@ public class SchemaMigrationRunner implements CommandLineRunner {
     public void run(String... args) {
         ensureAutoIncrement("users");
         ensureAutoIncrement("cart");
+        ensureUserFavoritesTable();
     }
 
     private void ensureAutoIncrement(String tableName) {
@@ -53,5 +54,15 @@ public class SchemaMigrationRunner implements CommandLineRunner {
         }
 
         jdbcTemplate.execute("ALTER TABLE " + tableName + " MODIFY COLUMN id BIGINT NOT NULL AUTO_INCREMENT");
+    }
+
+    private void ensureUserFavoritesTable() {
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS user_favorites (
+                    user_id BIGINT NOT NULL,
+                    kitchen_id BIGINT NOT NULL,
+                    PRIMARY KEY (user_id, kitchen_id)
+                )
+                """);
     }
 }
