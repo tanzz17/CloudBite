@@ -26,10 +26,12 @@ import java.util.stream.Collectors;
 @Configuration
 public class AppConfig {
 
-    @Value("${app.cors.allowed-origins:https://cloudbite-frontend.vercel.app,https://*.vercel.app}")
+    @Value("${app.cors.allowed-origins:https://cloud-bite-sigma.vercel.app,https://cloud-bite-git-main-tanzz17s-projects.vercel.app,https://cloudbite-frontend.vercel.app,https://*.vercel.app}")
     private String allowedOrigins;
 
     private static final List<String> DEFAULT_ALLOWED_ORIGINS = List.of(
+            "https://cloud-bite-sigma.vercel.app",
+            "https://cloud-bite-git-main-tanzz17s-projects.vercel.app",
             "https://cloudbite-frontend.vercel.app",
             "https://*.vercel.app"
     );
