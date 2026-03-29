@@ -1,0 +1,16 @@
+/* src/components/Navbar/Navbar.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.navbar {
+  @apply bg-orange-500 px-5 py-4 lg:px-20 flex justify-between items-center;
+}
+
+.navbar-logo {
+  @apply font-semibold text-white text-2xl cursor-pointer;
+}
+
+.navbar-controls {
+  @apply flex items-center space-x-2 lg:space-x-10;
+}

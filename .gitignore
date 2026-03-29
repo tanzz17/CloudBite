@@ -1,0 +1,15 @@
+# Frontend (Vite/React)
+frontend/cloudbite/node_modules/
+frontend/cloudbite/dist/
+frontend/cloudbite/.env
+frontend/cloudbite/.env.*.local
+
+# Backend (Spring/Maven)
+CloudBite-Cloud-Kitchen-Food-Delivery-Platform/target/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.suo
+*.ntvs*

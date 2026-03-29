@@ -1,0 +1,159 @@
+/* General Styling */
+:root {
+  --primary-color: #ff6600;
+  --secondary-color: #4a4a4a;
+  --background-color: #f7f7f7;
+  --card-background: #ffffff;
+  --text-color-dark: #333;
+  --text-color-light: #fff;
+  --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color-dark);
+}
+
+.home-page {
+  /* max-width: 1200px; */
+  margin: 0 auto;
+}
+
+/* Hero Section */
+.hero-section {
+  background: url('https://via.placeholder.com/1920x1080?text=Delicious+Food+Delivery') no-repeat center center/cover;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-light);
+  text-align: center;
+  padding: 0 20px;
+  position: relative;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.hero-content {
+  z-index: 2;
+  max-width: 700px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* FAQ Section Specific Styling */
+
+/* Main Container for the FAQ and Image */
+.faq-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rem; /* Spacing between the FAQ list and the image */
+  padding: 4rem 0; /* Vertical padding */
+  max-width: 1200px; /* Standard website container width */
+  margin: 0 auto;
+  align-items: center;
+
+}
+
+/* On large screens, switch to a row layout */
+@media (min-width: 1024px) {
+  /* .faq-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+  } */
+}
+
+/* Styling for each individual FAQ item */
+.faq-item {
+  margin-bottom: 1rem;
+}
+
+.faq-question {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+    padding-left: 50%
+
+}
+
+.faq-question:hover {
+  background-color: #f3f4f6;
+      padding-left: 50%
+
+}
+
+.faq-question h3 {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #374151;
+  margin: 0;
+}
+
+/* Styling for the FAQ answer */
+.faq-answer-wrapper {
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  max-height: 0;
+  opacity: 0;
+}
+
+/* State for open FAQ item */
+.faq-answer-wrapper.open {
+  max-height: 24rem; /* Arbitrarily large value to allow content to expand */
+  opacity: 1;
+  margin-top: 0.5rem;
+}
+
+.faq-answer-content {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #ff6600;
+}
+
+/* Image container */
+.faq-image-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: right;
+}
+
+/* Image styling */
+.faq-collage-image {
+  /* width: 100%; */
+  max-width: 28rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+}
+
+.faq-collage-image:hover {
+  transform: scale(1.05); /* The 'pop' effect */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
