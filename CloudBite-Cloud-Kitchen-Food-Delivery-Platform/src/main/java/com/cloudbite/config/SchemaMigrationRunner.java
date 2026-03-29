@@ -20,6 +20,7 @@ public class SchemaMigrationRunner implements CommandLineRunner {
         ensureIdGeneratorTable();
         ensureIdGeneratorRow("users");
         ensureIdGeneratorRow("cart");
+        ensureIdGeneratorRow("kitchen");
         ensureUserFavoritesTable();
     }
 

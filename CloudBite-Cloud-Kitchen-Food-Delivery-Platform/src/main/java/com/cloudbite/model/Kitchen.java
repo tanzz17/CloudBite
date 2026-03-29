@@ -12,13 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@TableGenerator(
+        name = "kitchen_id_generator",
+        table = "id_generator",
+        pkColumnName = "entity_name",
+        valueColumnName = "next_id",
+        pkColumnValue = "kitchen",
+        allocationSize = 1
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Kitchen {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "kitchen_id_generator")
     private Long id;
 
     // ✅ Cloud Kitchen Name
