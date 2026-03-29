@@ -8,6 +8,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
+@TableGenerator(
+        name = "user_id_generator",
+        table = "id_generator",
+        pkColumnName = "entity_name",
+        valueColumnName = "next_id",
+        pkColumnValue = "users",
+        allocationSize = 1
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +24,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_id_generator")
     @ToString.Include
     private Long id;
 

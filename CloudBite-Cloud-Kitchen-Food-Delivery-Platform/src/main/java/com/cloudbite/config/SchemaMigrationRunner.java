@@ -17,12 +17,22 @@ public class SchemaMigrationRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ensureAutoIncrement("users");
-        ensureAutoIncrement("cart");
+        ensureIdGeneratorTable();
+        ensureIdGeneratorRow("users");
+        ensureIdGeneratorRow("cart");
         ensureUserFavoritesTable();
     }
 
-    private void ensureAutoIncrement(String tableName) {
+    private void ensureIdGeneratorTable() {
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS id_generator (
+                    entity_name VARCHAR(100) NOT NULL PRIMARY KEY,
+                    next_id BIGINT NOT NULL
+                )
+                """);
+    }
+
+    private void ensureIdGeneratorRow(String tableName) {
         Integer tableExists = jdbcTemplate.queryForObject(
                 """
                 SELECT COUNT(*)
@@ -37,23 +47,30 @@ public class SchemaMigrationRunner implements CommandLineRunner {
             return;
         }
 
-        String extra = jdbcTemplate.query(
+        Integer generatorRowExists = jdbcTemplate.queryForObject(
                 """
-                SELECT extra
-                FROM information_schema.columns
-                WHERE table_schema = DATABASE()
-                  AND table_name = ?
-                  AND column_name = 'id'
+                SELECT COUNT(*)
+                FROM id_generator
+                WHERE entity_name = ?
                 """,
-                rs -> rs.next() ? rs.getString("extra") : null,
+                Integer.class,
                 tableName
         );
 
-        if (extra != null && extra.toLowerCase().contains("auto_increment")) {
+        if (generatorRowExists != null && generatorRowExists > 0) {
             return;
         }
 
-        jdbcTemplate.execute("ALTER TABLE " + tableName + " MODIFY COLUMN id BIGINT NOT NULL AUTO_INCREMENT");
+        Long nextId = jdbcTemplate.queryForObject(
+                "SELECT COALESCE(MAX(id), 0) + 1 FROM " + tableName,
+                Long.class
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO id_generator (entity_name, next_id) VALUES (?, ?)",
+                tableName,
+                nextId == null ? 1L : nextId
+        );
     }
 
     private void ensureUserFavoritesTable() {

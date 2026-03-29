@@ -8,6 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@TableGenerator(
+        name = "cart_id_generator",
+        table = "id_generator",
+        pkColumnName = "entity_name",
+        valueColumnName = "next_id",
+        pkColumnValue = "cart",
+        allocationSize = 1
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +24,7 @@ import java.util.List;
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "cart_id_generator")
     @ToString.Include
     private Long id;
 
