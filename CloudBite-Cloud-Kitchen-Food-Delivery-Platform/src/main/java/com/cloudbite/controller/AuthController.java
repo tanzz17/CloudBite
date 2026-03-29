@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public class AuthController {
     @PostMapping("/signup/customer")
     public ResponseEntity<AuthResponse> createCustomer(@RequestBody User user) throws Exception {
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new Exception("Email already registered with another account");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered with another account");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -120,7 +121,7 @@ public class AuthController {
     @PostMapping("/signup/admin")
     public ResponseEntity<?> createAdmin(@RequestBody User user) throws Exception {
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new Exception("Admin already exists with this email");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Admin already exists with this email");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -175,7 +176,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody User user) throws Exception {
 
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new Exception("Email is already used with another account");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already used with another account");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
