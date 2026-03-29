@@ -72,37 +72,51 @@ public class AuthController {
     // ------------------ 🧑‍💼 ADMIN CREATES KITCHEN OWNER ------------------
     @PostMapping("/admin/register-kitchen")
     public ResponseEntity<?> createKitchenWithOwner(@RequestBody Map<String, String> request) {
+        try {
+            String fullName = request.get("fullName");
+            String email = request.get("email");
+            String password = request.get("password");
+            String kitchenName = request.get("kitchenName");
+            String kitchenAddress = request.get("kitchenAddress");
 
-        String fullName = request.get("fullName");
-        String email = request.get("email");
-        String password = request.get("password");
-        String kitchenName = request.get("kitchenName");
-        String kitchenAddress = request.get("kitchenAddress");
+            if (fullName == null || fullName.isBlank() ||
+                    email == null || email.isBlank() ||
+                    password == null || password.isBlank() ||
+                    kitchenName == null || kitchenName.isBlank() ||
+                    kitchenAddress == null || kitchenAddress.isBlank()) {
+                return new ResponseEntity<>(Map.of("message", "All fields are required"), HttpStatus.BAD_REQUEST);
+            }
 
-        if (userRepository.findByEmail(email) != null) {
-            return new ResponseEntity<>(Map.of("message", "Email already exists"), HttpStatus.BAD_REQUEST);
+            if (userRepository.findByEmail(email) != null) {
+                return new ResponseEntity<>(Map.of("message", "Email already exists"), HttpStatus.BAD_REQUEST);
+            }
+
+            User owner = new User();
+            owner.setFullName(fullName.trim());
+            owner.setEmail(email.trim().toLowerCase());
+            owner.setPassword(passwordEncoder.encode(password));
+            owner.setRole(USER_ROLE.ROLE_KITCHEN_OWNER);
+            userRepository.save(owner);
+
+            Kitchen kitchen = new Kitchen();
+            kitchen.setName(kitchenName.trim());
+            kitchen.setOwnerName(fullName.trim());
+            kitchen.setAddress(kitchenAddress.trim());
+            kitchen.setOwner(owner);
+            kitchen.setOpen(true);
+            kitchenRepository.save(kitchen);
+
+            return new ResponseEntity<>(Map.of(
+                    "message", "Kitchen & Owner registered successfully!",
+                    "ownerEmail", owner.getEmail(),
+                    "role", "KITCHEN_OWNER"
+            ), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of(
+                    "message", "Kitchen registration failed",
+                    "error", e.getMessage()
+            ), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        User owner = new User();
-        owner.setFullName(fullName);
-        owner.setEmail(email);
-        owner.setPassword(passwordEncoder.encode(password));
-        owner.setRole(USER_ROLE.ROLE_KITCHEN_OWNER);
-        userRepository.save(owner);
-
-        Kitchen kitchen = new Kitchen();
-        kitchen.setName(kitchenName);
-        kitchen.setOwnerName(fullName);
-        kitchen.setAddress(kitchenAddress);
-        kitchen.setOwner(owner);
-        kitchen.setOpen(true);
-        kitchenRepository.save(kitchen);
-
-        return new ResponseEntity<>(Map.of(
-                "message", "Kitchen & Owner registered successfully!",
-                "ownerEmail", email,
-                "role", "KITCHEN_OWNER"
-        ), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/admin/delete-kitchen/{id}")
