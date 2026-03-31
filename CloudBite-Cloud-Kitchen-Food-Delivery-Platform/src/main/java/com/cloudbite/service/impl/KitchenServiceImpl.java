@@ -3,6 +3,7 @@ package com.cloudbite.service.impl;
 import com.cloudbite.model.Kitchen;
 import com.cloudbite.model.User;
 import com.cloudbite.repository.KitchenRepository;
+import com.cloudbite.repository.projection.KitchenPublicRow;
 import com.cloudbite.request.KitchenUpdateRequest;
 import com.cloudbite.response.KitchenResponse;
 import com.cloudbite.service.KitchenService;
@@ -53,41 +54,32 @@ public class KitchenServiceImpl implements KitchenService {
     }
     @Override
     public List<KitchenResponse> getAllKitchens() {
-        List<Kitchen> kitchens = kitchenRepository.findAll();
+        List<KitchenPublicRow> kitchens = kitchenRepository.findAllPublicKitchenRows();
         List<KitchenResponse> responses = new ArrayList<>();
 
-        for (Kitchen kitchen : kitchens) {
+        for (KitchenPublicRow kitchen : kitchens) {
             KitchenResponse response = new KitchenResponse();
             response.setId(kitchen.getId());
             response.setName(kitchen.getName());
             response.setDescription(kitchen.getDescription());
-            // Avoid forcing owner relation resolution on legacy schemas.
             response.setOwnerId(null);
             response.setOwnerName(kitchen.getOwnerName());
             response.setAddress(kitchen.getAddress());
             response.setOpeningHours(kitchen.getOpeningHours());
             response.setClosingHours(kitchen.getClosingHours());
-            response.setOpen(kitchen.isOpen());
+            response.setOpen(Boolean.TRUE.equals(kitchen.getOpen()));
 
-            // ✅ Fetch logo URL
             String logoUrl = kitchen.getLogoUrl();
-
             if (logoUrl == null || logoUrl.isEmpty()) {
-                // Fetch from image table if missing
                 List<String> imageUrls = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
                 if (imageUrls != null && !imageUrls.isEmpty()) {
-                    logoUrl = imageUrls.get(0); // first image as logo
+                    logoUrl = imageUrls.get(0);
                 }
             }
 
             response.setLogoUrl(logoUrl);
 
-            // ✅ Also attach all image URLs (optional)
-            if (kitchen.getImages() != null && !kitchen.getImages().isEmpty()) {
-                response.setImages(kitchen.getImages());
-            } else {
-                response.setImages(kitchenRepository.findImageUrlsByKitchenId(kitchen.getId()));
-            }
+            response.setImages(kitchenRepository.findImageUrlsByKitchenId(kitchen.getId()));
 
             responses.add(response);
         }
@@ -104,15 +96,12 @@ public class KitchenServiceImpl implements KitchenService {
     // 🎯 ADDED: Implementation for the DTO-returning method
     @Override
     public KitchenResponse getKitchenResponseById(Long id) {
-        // 1. Fetch the Kitchen Entity using the existing method
-        Kitchen kitchenEntity = this.getKitchenById(id);
-
-        // 2. Convert the fetched entity to the DTO
-        return convertToKitchenResponse(kitchenEntity);
+        return kitchenRepository.findPublicKitchenRowById(id)
+                .map(this::convertToKitchenResponse)
+                .orElse(null);
     }
 
-    // ADDED: The private helper method to handle DTO conversion
-    private KitchenResponse convertToKitchenResponse(Kitchen kitchen) {
+    private KitchenResponse convertToKitchenResponse(KitchenPublicRow kitchen) {
         if (kitchen == null) {
             return null;
         }
@@ -124,20 +113,11 @@ public class KitchenServiceImpl implements KitchenService {
         response.setAddress(kitchen.getAddress());
         response.setOpeningHours(kitchen.getOpeningHours());
         response.setClosingHours(kitchen.getClosingHours());
-        response.setOpen(kitchen.isOpen());
-
-        // Public DTOs do not need owner relation hydration.
+        response.setOpen(Boolean.TRUE.equals(kitchen.getOpen()));
         response.setOwnerId(null);
         response.setOwnerName(kitchen.getOwnerName());
-
-        // Set Logo URL (Use the explicit logoUrl field)
         response.setLogoUrl(kitchen.getLogoUrl());
-
-        // Set Images List (Reusing image logic)
-        List<String> images = kitchen.getImages();
-        if (images == null || images.isEmpty()) {
-            images = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
-        }
+        List<String> images = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
         response.setImages(images);
 
         return response;
