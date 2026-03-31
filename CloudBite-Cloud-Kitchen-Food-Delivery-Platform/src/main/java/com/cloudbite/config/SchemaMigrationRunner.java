@@ -18,7 +18,7 @@ public class SchemaMigrationRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         ensureIdGeneratorTable();
-        ensureIdGeneratorRow("users");
+        ensureIdGeneratorRow("user");
         ensureIdGeneratorRow("cart");
         ensureIdGeneratorRow("kitchen");
         ensureUserFavoritesTable();

@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @TableGenerator(
         name = "user_id_generator",
         table = "id_generator",
         pkColumnName = "entity_name",
         valueColumnName = "next_id",
-        pkColumnValue = "users",
+        pkColumnValue = "user",
         allocationSize = 1
 )
 @Getter
