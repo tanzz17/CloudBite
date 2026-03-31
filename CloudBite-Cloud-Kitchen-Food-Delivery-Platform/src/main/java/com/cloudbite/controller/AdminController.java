@@ -3,6 +3,7 @@ package com.cloudbite.controller;
 import com.cloudbite.dto.DeliveryPartnerRequest;
 import com.cloudbite.model.*;
 import com.cloudbite.repository.DeliveryPartnerRepository;
+import com.cloudbite.repository.KitchenRepository;
 import com.cloudbite.repository.OrderRepository;
 import com.cloudbite.repository.UserRepository;
 import com.cloudbite.service.KitchenService;
@@ -29,6 +30,9 @@ public class AdminController {
     private UserRepository userRepository;
 
     @Autowired
+    private KitchenRepository kitchenRepository;
+
+    @Autowired
     private DeliveryPartnerRepository deliveryPartnerRepository;
 
     @Autowired
@@ -42,31 +46,17 @@ public class AdminController {
     @GetMapping("/dashboard/stats")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getDashboardStats() {
-        Map<String, Object> stats = new HashMap<>();
-
-        // 1. Total Kitchens
-        long totalKitchens = kitchenService.getAllKitchens().size();
-
-        // 2. Active Partners (Count those who are not OFFLINE)
-        long activePartners = deliveryPartnerRepository.findAll().stream()
-                .filter(p -> p.getStatus() != DeliveryPartnerStatus.OFFLINE)
-                .count();
-
-        // 3. Total Orders
-        List<Order> allOrders = orderRepository.findAll();
-        long totalOrders = allOrders.size();
-
-        // 4. Total Revenue (Summing up totalPrice from all orders)
-        double totalRevenue = allOrders.stream()
-                .mapToDouble(order -> order.getTotalPrice() != null ? order.getTotalPrice() : 0.0)
-                .sum();
-
-        stats.put("totalKitchens", totalKitchens);
-        stats.put("activePartners", activePartners);
-        stats.put("totalOrders", totalOrders);
-        stats.put("revenue", totalRevenue);
-
-        return ResponseEntity.ok(stats);
+        try {
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("totalKitchens", kitchenRepository.count());
+            stats.put("activePartners", deliveryPartnerRepository.countByStatusNot(DeliveryPartnerStatus.OFFLINE));
+            stats.put("totalOrders", orderRepository.count());
+            stats.put("revenue", orderRepository.sumTotalRevenue());
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to fetch dashboard stats", "error", e.getMessage()));
+        }
     }
 
 

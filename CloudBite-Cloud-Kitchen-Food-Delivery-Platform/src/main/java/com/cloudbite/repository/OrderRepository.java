@@ -69,4 +69,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE o.id = :id")
     Optional<Order> findByIdWithDetails(@Param("id") Long id);
 
+    @Query(value = "SELECT COALESCE(SUM(total_price), 0) FROM orders", nativeQuery = true)
+    Double sumTotalRevenue();
+
 }

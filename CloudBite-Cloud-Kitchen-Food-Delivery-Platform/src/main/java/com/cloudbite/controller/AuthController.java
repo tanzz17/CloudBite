@@ -2,6 +2,7 @@ package com.cloudbite.controller;
 
 import com.cloudbite.config.JwtProvider;
 import com.cloudbite.model.*;
+import com.cloudbite.repository.projection.KitchenAdminRow;
 import com.cloudbite.repository.*;
 import com.cloudbite.request.LoginRequest;
 import com.cloudbite.response.AuthResponse;
@@ -221,22 +222,26 @@ public class AuthController {
 
     // ------------------ 🧾 GET ALL KITCHENS (ADMIN ONLY) ------------------
     @GetMapping("/admin/kitchens")
-    public ResponseEntity<List<Map<String, Object>>> getAllKitchens() {
-        List<Kitchen> kitchens = kitchenRepository.findAll();
+    public ResponseEntity<?> getAllKitchens() {
+        try {
+            List<KitchenAdminRow> kitchens = kitchenRepository.findAllAdminKitchenRows();
 
-        List<Map<String, Object>> response = new ArrayList<>();
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (KitchenAdminRow kitchen : kitchens) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", kitchen.getId());
+                map.put("name", kitchen.getName());
+                map.put("address", kitchen.getAddress());
+                map.put("ownerName", kitchen.getOwnerName());
+                map.put("ownerEmail", kitchen.getOwnerEmail());
+                response.add(map);
+            }
 
-        for (Kitchen kitchen : kitchens) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", kitchen.getId());
-            map.put("name", kitchen.getName());
-            map.put("address", kitchen.getAddress());
-            map.put("ownerName", kitchen.getOwner() != null ? kitchen.getOwner().getFullName() : "No owner");
-            map.put("ownerEmail", kitchen.getOwner() != null ? kitchen.getOwner().getEmail() : "No owner");
-            response.add(map);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to fetch kitchens", "error", e.getMessage()));
         }
-
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-kitchen")

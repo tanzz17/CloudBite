@@ -2,6 +2,7 @@ package com.cloudbite.repository;
 
 import com.cloudbite.model.Kitchen;
 import com.cloudbite.model.User;
+import com.cloudbite.repository.projection.KitchenAdminRow;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +22,19 @@ public interface KitchenRepository extends JpaRepository<Kitchen, Long> {
 
     @Query(value = "SELECT images FROM kitchen_images WHERE kitchen_id = :kitchenId", nativeQuery = true)
     List<String> findImageUrlsByKitchenId(@Param("kitchenId") Long kitchenId);
+
+    @Query(value = """
+            SELECT
+                k.id AS id,
+                k.name AS name,
+                k.address AS address,
+                COALESCE(k.owner_name, 'No owner') AS ownerName,
+                COALESCE(u.email, 'No owner') AS ownerEmail
+            FROM kitchen k
+            LEFT JOIN user u ON k.owner_id = u.id
+            ORDER BY k.id DESC
+            """, nativeQuery = true)
+    List<KitchenAdminRow> findAllAdminKitchenRows();
 
 
 }

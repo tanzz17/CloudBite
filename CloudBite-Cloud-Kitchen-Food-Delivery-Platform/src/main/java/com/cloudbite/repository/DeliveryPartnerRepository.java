@@ -13,4 +13,6 @@ public interface DeliveryPartnerRepository
 
     Optional<DeliveryPartner> findFirstByStatus(DeliveryPartnerStatus status);
 
+    long countByStatusNot(DeliveryPartnerStatus status);
+
 }
