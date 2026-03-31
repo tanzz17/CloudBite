@@ -1,6 +1,7 @@
 package com.cloudbite.controller;
 
 import com.cloudbite.dto.DeliveryPartnerRequest;
+import com.cloudbite.dto.AdminDeliveryPartnerRow;
 import com.cloudbite.model.*;
 import com.cloudbite.repository.DeliveryPartnerRepository;
 import com.cloudbite.repository.KitchenRepository;
@@ -188,8 +189,27 @@ public class AdminController {
 
     @GetMapping("/delivery-partners")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<DeliveryPartner>> getAllDeliveryPartners() {
-        return ResponseEntity.ok(deliveryPartnerRepository.findAll());
+    public ResponseEntity<?> getAllDeliveryPartners() {
+        try {
+            List<AdminDeliveryPartnerRow> rows = deliveryPartnerRepository.findAllAdminRows();
+            List<Map<String, Object>> response = rows.stream().map(row -> {
+                Map<String, Object> item = new HashMap<>();
+                item.put("id", row.id());
+                item.put("phone", row.phone());
+                item.put("vehicleType", row.vehicleType());
+                item.put("status", row.status());
+                item.put("user", Map.of(
+                        "fullName", row.fullName() == null ? "Unnamed Partner" : row.fullName(),
+                        "email", row.email() == null ? "N/A" : row.email()
+                ));
+                return item;
+            }).toList();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to fetch delivery partners", "error", e.getMessage()));
+        }
     }
 
     @PutMapping("/delivery-partners/{id}/offline")
