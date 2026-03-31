@@ -61,7 +61,8 @@ public class KitchenServiceImpl implements KitchenService {
             response.setId(kitchen.getId());
             response.setName(kitchen.getName());
             response.setDescription(kitchen.getDescription());
-            response.setOwnerId(kitchen.getOwner() != null ? kitchen.getOwner().getId() : null);
+            // Avoid forcing owner relation resolution on legacy schemas.
+            response.setOwnerId(null);
             response.setOwnerName(kitchen.getOwnerName());
             response.setAddress(kitchen.getAddress());
             response.setOpeningHours(kitchen.getOpeningHours());
@@ -125,14 +126,9 @@ public class KitchenServiceImpl implements KitchenService {
         response.setClosingHours(kitchen.getClosingHours());
         response.setOpen(kitchen.isOpen());
 
-        // Set Owner Details (safely check for null owner)
-        if (kitchen.getOwner() != null) {
-            response.setOwnerId(kitchen.getOwner().getId());
-            response.setOwnerName(kitchen.getOwnerName());
-        } else {
-            response.setOwnerId(null);
-            response.setOwnerName(null);
-        }
+        // Public DTOs do not need owner relation hydration.
+        response.setOwnerId(null);
+        response.setOwnerName(kitchen.getOwnerName());
 
         // Set Logo URL (Use the explicit logoUrl field)
         response.setLogoUrl(kitchen.getLogoUrl());
