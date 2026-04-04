@@ -41,13 +41,13 @@ public interface KitchenRepository extends JpaRepository<Kitchen, Long> {
             SELECT
                 k.id AS id,
                 k.name AS name,
-                k.description AS description,
+                COALESCE(k.description, '') AS description,
                 k.address AS address,
-                k.owner_name AS ownerName,
-                k.opening_hours AS openingHours,
-                k.closing_hours AS closingHours,
-                k.is_open AS open,
-                k.logo_url AS logoUrl
+                COALESCE(k.owner_name, 'Unknown') AS ownerName,
+                COALESCE(k.opening_hours, '10:00 AM') AS openingHours,
+                COALESCE(k.closing_hours, '10:00 PM') AS closingHours,
+                COALESCE(k.is_open, true) AS open,
+                COALESCE(k.logo_url, '') AS logoUrl
             FROM kitchen k
             ORDER BY k.id DESC
             """, nativeQuery = true)
@@ -57,13 +57,13 @@ public interface KitchenRepository extends JpaRepository<Kitchen, Long> {
             SELECT
                 k.id AS id,
                 k.name AS name,
-                k.description AS description,
+                COALESCE(k.description, '') AS description,
                 k.address AS address,
-                k.owner_name AS ownerName,
-                k.opening_hours AS openingHours,
-                k.closing_hours AS closingHours,
-                k.is_open AS open,
-                k.logo_url AS logoUrl
+                COALESCE(k.owner_name, 'Unknown') AS ownerName,
+                COALESCE(k.opening_hours, '10:00 AM') AS openingHours,
+                COALESCE(k.closing_hours, '10:00 PM') AS closingHours,
+                COALESCE(k.is_open, true) AS open,
+                COALESCE(k.logo_url, '') AS logoUrl
             FROM kitchen k
             WHERE k.id = :kitchenId
             """, nativeQuery = true)

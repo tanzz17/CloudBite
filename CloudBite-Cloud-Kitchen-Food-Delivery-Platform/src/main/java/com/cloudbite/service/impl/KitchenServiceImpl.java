@@ -71,15 +71,23 @@ public class KitchenServiceImpl implements KitchenService {
 
             String logoUrl = kitchen.getLogoUrl();
             if (logoUrl == null || logoUrl.isEmpty()) {
-                List<String> imageUrls = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
-                if (imageUrls != null && !imageUrls.isEmpty()) {
-                    logoUrl = imageUrls.get(0);
+                try {
+                    List<String> imageUrls = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
+                    if (imageUrls != null && !imageUrls.isEmpty()) {
+                        logoUrl = imageUrls.get(0);
+                    }
+                } catch (Exception e) {
+                    // Table might not exist yet, ignore
                 }
             }
 
             response.setLogoUrl(logoUrl);
 
-            response.setImages(kitchenRepository.findImageUrlsByKitchenId(kitchen.getId()));
+            try {
+                response.setImages(kitchenRepository.findImageUrlsByKitchenId(kitchen.getId()));
+            } catch (Exception e) {
+                response.setImages(new ArrayList<>());
+            }
 
             responses.add(response);
         }
@@ -117,8 +125,13 @@ public class KitchenServiceImpl implements KitchenService {
         response.setOwnerId(null);
         response.setOwnerName(kitchen.getOwnerName());
         response.setLogoUrl(kitchen.getLogoUrl());
-        List<String> images = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
-        response.setImages(images);
+
+        try {
+            List<String> images = kitchenRepository.findImageUrlsByKitchenId(kitchen.getId());
+            response.setImages(images);
+        } catch (Exception e) {
+            response.setImages(new ArrayList<>());
+        }
 
         return response;
     }
